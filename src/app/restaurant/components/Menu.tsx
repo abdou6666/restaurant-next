@@ -1,10 +1,12 @@
+import { Item } from '@prisma/client'
 import { FC } from 'react'
+import MenuCard from './MenuCard'
 
 interface MenuProps {
-
+    menu: Item[]
 }
 
-const Menu: FC<MenuProps> = ({ }) => {
+const Menu: FC<MenuProps> = ({ menu }) => {
     return (
         <main className="bg-white mt-5">
             <div>
@@ -12,15 +14,16 @@ const Menu: FC<MenuProps> = ({ }) => {
                     <h1 className="font-bold text-4xl">Menu</h1>
                 </div>
                 <div className="flex flex-wrap justify-between">
-                    {/* MENU CARD */}
-                    <div className=" border rounded p-3 w-[49%] mb-3">
-                        <h3 className="font-bold text-lg">Surf and Turf</h3>
-                        <p className="font-light mt-1 text-sm">
-                            A well done steak with lobster and rice
-                        </p>
-                        <p className="mt-7">$80.00</p>
-                    </div>
-                    {/* MENU CARD */}
+                    {menu.length ? (menu.map(item => (
+                        <MenuCard item={item} key={item.id} />
+                    ))) :
+                        (
+                            <>
+                                <h1>This Restaurant does not have a menu.</h1>
+                            </>
+                        )
+
+                    }
                 </div>
             </div>
         </main>

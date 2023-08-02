@@ -1,29 +1,33 @@
-import Header from '@/app/components/Header'
-import Navbar from '@/app/components/Navbar'
-import Link from 'next/link'
-import { FC } from 'react'
-import RestaurantNavbar from '../../components/RestaurantNavbar'
+import { prisma } from '@/app/db'
 import Menu from '../../components/Menu'
+import RestaurantNavbar from '../../components/RestaurantNavbar'
 
-interface MenuPageProps {
 
+const fetchItems = async (slug: string) => {
+    const restaurant = await prisma.restaurant.findUnique({
+        where: {
+            slug
+        },
+        select: {
+            items: true
+        }
+    })
+    if (!restaurant) {
+        throw new Error('fech items no restraunts')
+    }
+    return restaurant;
 }
-
-const MenuPage: FC<MenuPageProps> = ({ }) => {
+const MenuPage = async ({ params: { slug } }: { params: { slug: string } }) => {
+    console.log({ slug })
+    const menu = await fetchItems(slug);
+    console.log({ menu })
     return (
-        <main className="bg-gray-100 min-h-screen w-screen">
-            <main className="max-w-screen-2xl m-auto bg-white">
-                <Navbar />
-                <Header />
-                <div className="flex m-auto w-2/3 justify-between items-start 0 -mt-11">
-                    <div className="bg-white w-[100%] rounded p-3 shadow">
-                        <RestaurantNavbar />
-                        <Menu />
-                    </div>
-                </div>
-            </main>
-        </main>
-
+        <>
+            <div className="bg-white w-[100%] rounded p-3 shadow">
+                <RestaurantNavbar slug={slug} />
+                <Menu menu={menu.items} />
+            </div>
+        </>
     )
 }
 
