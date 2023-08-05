@@ -24,7 +24,8 @@ const fetchRestaurant = async (slug: string) => {
             name: true,
             images: true,
             description: true,
-            slug: true
+            slug: true,
+            reviews: true
         }
     })
     if (!restaurant) {
@@ -40,10 +41,10 @@ const RestaurantDetails: FC<pageProps> = async ({ params: { slug } }) => {
             <div className="bg-white w-[70%] rounded p-3 shadow">
                 <RestaurantNavbar slug={restaurant.slug} />
                 <Title title={restaurant.name} />
-                <Rating />
+                <Rating reviews={restaurant.reviews} />
                 <Description description={restaurant.description} />
                 <Images images={restaurant.images} />
-                <Reviews />
+                <Reviews reviews={restaurant.reviews} />
             </div>
             <div className="w-[27%] relative text-reg">
                 <ResverationCard />
