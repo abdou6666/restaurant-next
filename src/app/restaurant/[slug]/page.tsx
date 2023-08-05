@@ -7,6 +7,7 @@ import RestaurantNavbar from '../components/RestaurantNavbar'
 import ResverationCard from '../components/ResverationCard'
 import Reviews from '../components/Reviews'
 import Title from '../components/Title'
+import { notFound } from 'next/navigation'
 
 interface pageProps {
     params: {
@@ -29,7 +30,8 @@ const fetchRestaurant = async (slug: string) => {
         }
     })
     if (!restaurant) {
-        throw new Error('no restaurant')
+        // throw new Error(`no restaurants found with name ${slug}`)
+        notFound();
     }
     return restaurant;
 }
