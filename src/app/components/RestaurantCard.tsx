@@ -1,4 +1,4 @@
-import { Cuisine, PRICE, Restaurant } from '@prisma/client'
+import { Cuisine, Location, PRICE, Restaurant } from '@prisma/client'
 import Link from 'next/link'
 import { FC } from 'react'
 import { RestaurantCardType } from '../page'
@@ -6,21 +6,22 @@ import Price from './Price'
 
 
 interface RestaurantCardProps {
-    restaurant: RestaurantCardType
+    restaurant: RestaurantCardType,
+
 }
 
 const RestaurantCard: FC<RestaurantCardProps> = ({ restaurant }) => {
     return (
         <div className="py-3 px-36 mt-10 flex flex-wrap justify-center" >
             <Link href={`/restaurant/${restaurant.slug}`}>
-                <div className="w-64 h-72 m-3 rounded overflow-hidden border cursor-pointer">
+                <div className="w-44 h-72 m-3 rounded overflow-hidden border cursor-pointer">
                     <img
                         src={restaurant.main_image}
                         alt=""
                         className="w-full h-36"
                     />
                     <div className="p-1">
-                        <h3 className="font-bold text-2xl mb-2">{restaurant.name}</h3>
+                        <h3 className="font-bold text-2xl mb-2 capitalize">{restaurant.name}</h3>
                         <div className="flex items-start">
                             <div className="flex mb-2">*****</div>
                             <p className="ml-2">77 reviews</p>

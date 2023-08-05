@@ -19,9 +19,9 @@ const Searchbar: FC<SearchbarProps> = ({ }) => {
                 value={location}
             />
             <button className="rounded bg-red-600 px-9 py-2 text-white" onClick={() => {
-                if (location === 'ba')
-                    return;
-                router.push('search')
+                if (location === '') return
+                router.push(`search?city=${location}`)
+                setLocation('')
             }}>
                 Lets go
             </button>
