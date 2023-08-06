@@ -55,7 +55,7 @@ export default function AuthModal({ isSignIn, setShowModal }: { isSignIn: boolea
         }
         setDisabled(true)
 
-    }, [inputs])
+    }, [inputs, isSignIn])
 
     return (
         <>

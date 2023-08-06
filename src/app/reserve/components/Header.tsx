@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import { FC } from 'react'
 
 interface HeaderProps {
@@ -9,7 +10,7 @@ const Header: FC<HeaderProps> = ({ }) => {
         <div>
             <h3 className="font-bold">You are almost done!</h3>
             <div className="mt-5 flex">
-                <img
+                <Image
                     src="https://images.otstatic.com/prod1/49153814/2/medium.jpg"
                     alt=""
                     className="w-32 h-18 rounded"

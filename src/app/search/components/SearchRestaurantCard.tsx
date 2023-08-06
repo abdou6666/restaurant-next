@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import Link from 'next/link'
 import { FC } from 'react'
 
@@ -8,7 +9,7 @@ interface SearchRestaurantCardProps {
 const SearchRestaurantCard: FC<SearchRestaurantCardProps> = ({ }) => {
     return (
         <div className="border-b flex pb-5">
-            <img
+            <Image
                 src="https://images.otstatic.com/prod1/49153814/2/medium.jpg"
                 alt=""
                 className="w-44 rounded"

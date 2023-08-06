@@ -44,7 +44,7 @@ const fetchRestaurants = async (): Promise<RestaurantCardType[]> => {
   })
 }
 
-export const metdata: Metadata = {
+export const metadata: Metadata = {
   title: 'OpenTable',
 }
 export default async function Home() {
