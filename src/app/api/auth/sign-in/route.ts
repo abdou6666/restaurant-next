@@ -1,0 +1,52 @@
+import { prisma } from "@/app/db"
+import { NextResponse } from "next/server"
+import bcrypt from 'bcrypt';
+import validator from "validator";
+import * as jose from 'jose';
+
+export async function POST(req: Request) {
+    const { email, password } = await req.json()
+
+    const errors: string[] = []
+
+    const validationSchema = [
+        {
+            valid: validator.isEmail(email),
+            errorMessage: 'Email Invalid'
+        },
+        {
+            valid: validator.isLength(password, { min: 1 }),
+            errorMessage: 'Password Invalid'
+        },
+    ]
+    validationSchema.forEach(check => {
+        if (!check.valid) {
+            errors.push(check.errorMessage)
+        }
+    })
+
+    if (errors.length) {
+        return NextResponse.json({ errorMesasge: errors }, { status: 400 })
+    }
+    const user = await prisma.user.findFirst({
+        where: {
+            email
+        }
+    })
+
+    if (!user) {
+        return NextResponse.json({ error: 'user does not exist' }, { status: 401 })
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password)
+
+    if (!isPasswordValid) {
+        return NextResponse.json({ error: 'Wrong Password' }, { status: 401 })
+    }
+
+    const alg = 'HS256'
+    const secret = new TextEncoder().encode(process.env.SECRET)
+    const token = await new jose.SignJWT({ email: email }).setProtectedHeader({ alg }).setExpirationTime("24h").sign(secret)
+    return NextResponse.json({ token }, { status: 200 })
+
+}
