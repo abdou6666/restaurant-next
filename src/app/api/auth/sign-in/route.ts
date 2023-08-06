@@ -3,6 +3,8 @@ import { NextResponse } from "next/server"
 import bcrypt from 'bcrypt';
 import validator from "validator";
 import * as jose from 'jose';
+import { setCookies } from 'cookies-next';
+
 
 export async function POST(req: Request) {
     const { email, password } = await req.json()
@@ -35,18 +37,26 @@ export async function POST(req: Request) {
     })
 
     if (!user) {
-        return NextResponse.json({ error: 'user does not exist' }, { status: 401 })
+        return NextResponse.json({ errorMessage: 'user does not exist' }, { status: 401 })
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password)
 
     if (!isPasswordValid) {
-        return NextResponse.json({ error: 'Wrong Password' }, { status: 401 })
+        return NextResponse.json({ errorMessage: 'Wrong Password' }, { status: 401 })
     }
 
     const alg = 'HS256'
     const secret = new TextEncoder().encode(process.env.SECRET)
     const token = await new jose.SignJWT({ email: email }).setProtectedHeader({ alg }).setExpirationTime("24h").sign(secret)
-    return NextResponse.json({ token }, { status: 200 })
+    const res = NextResponse.json({
+        firstName: user.first_name,
+        lastName: user.last_name,
+        email: user.email,
+        city: user.city,
+        phone: user.phone
+    }, { status: 200 })
+    res.cookies.set('jwt', token, { maxAge: 60 * 6 * 24 })
+    return res;
 
 }

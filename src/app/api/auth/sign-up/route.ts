@@ -50,17 +50,18 @@ export async function POST(req: Request) {
     if (errors.length) {
         return NextResponse.json({ errorMesasge: errors }, { status: 400 })
     }
-    const user = await prisma.user.findFirst({
+    const userExist = await prisma.user.findFirst({
         where: {
             email: email.toLowerCase()
 
         }
     })
-    if (user) {
-        return NextResponse.json({ errorMesasge: 'Email already exist' }, { status: 400 })
+    if (userExist) {
+        return NextResponse.json({ errorMessage: 'Email already exist' }, { status: 400 })
     }
+
     const hashedPassword = await bcrypt.hash(password, 10);
-    const { id } = await prisma.user.create({
+    const user = await prisma.user.create({
         data: {
             city,
             email,
@@ -73,5 +74,16 @@ export async function POST(req: Request) {
     const alg = 'HS256'
     const secret = new TextEncoder().encode(process.env.SECRET)
     const token = await new jose.SignJWT({ email: email }).setProtectedHeader({ alg }).setExpirationTime("24h").sign(secret)
-    return NextResponse.json({ msg: `user created ${id}`, token }, { status: 201 })
+
+    let res = NextResponse.json({
+        firstName: user.first_name,
+        lastName: user.last_name,
+        email: user.email,
+        city: user.city,
+        phone: user.phone
+    }, { status: 201 })
+
+    res.cookies.set('jwt', token, { maxAge: 24 * 6 * 60 })
+
+    return res;
 }

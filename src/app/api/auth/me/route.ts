@@ -26,8 +26,19 @@ export async function POST(req: Request) {
                 phone: true,
             }
         })
-        return NextResponse.json({ user }, { status: 200 })
+        if (!user) {
+            throw new Error('User does not exist');
+        }
+
+        return NextResponse.json({
+            firstName: user.first_name,
+            lastName: user.last_name,
+            email: user.email,
+            city: user.city,
+            phone: user.phone
+        }, { status: 200 })
     } catch (error) {
         return NextResponse.json({ errorMessage: 'Unauthorized (invalid token)' }, { status: 401 })
     }
+
 }

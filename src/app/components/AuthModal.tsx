@@ -1,7 +1,9 @@
 "use client"
 import { Dialog, Transition } from '@headlessui/react'
-import { Dispatch, Fragment, SetStateAction, useState } from 'react'
+import { Dispatch, Fragment, SetStateAction, useContext, useEffect, useState } from 'react'
 import AuthModalInputs from './AuthModalInputs'
+import useAuth from '../hooks/useAuth'
+import { AuthenticationContext } from '../context/AuthContext'
 
 
 export default function AuthModal({ isSignIn, setShowModal }: { isSignIn: boolean, setShowModal: Dispatch<SetStateAction<string>> }) {
@@ -14,17 +16,46 @@ export default function AuthModal({ isSignIn, setShowModal }: { isSignIn: boolea
         city: '',
         password: ''
     })
+    const [disabled, setDisabled] = useState(true)
+
+    const { data, error, loading } = useContext(AuthenticationContext);
+
     const renderContent = (signInContent: string, signUpContent: string) => {
         return isSignIn ? signInContent : signUpContent
     }
 
-    function closeModal() {
+    const { SignIn, SignUp } = useAuth();
+
+    const handleSubmit = async (e: any) => {
+        e.preventDefault();
+        isSignIn ?
+            await SignIn({ email: inputs.email, password: inputs.password, handleClose: closeModal }) :
+            await SignUp({ email: inputs.email, password: inputs.password, city: inputs.city, first_name: inputs.firstName, last_name: inputs.lastName, phone: inputs.phone, handleClose: closeModal })
+    }
+
+    const closeModal = () => {
         setIsOpen(false)
     }
 
     function openModal() {
         setIsOpen(true)
     }
+    useEffect(() => {
+        if (isSignIn) {
+            if (inputs.password && inputs.email) {
+                setDisabled(false)
+                return;
+            }
+
+        } else {
+            if (inputs.password && inputs.email && inputs.city && inputs.lastName && inputs.firstName && inputs.phone) {
+                setDisabled(false)
+                return;
+            }
+        }
+        setDisabled(true)
+
+    }, [inputs])
 
     return (
         <>
@@ -74,31 +105,27 @@ export default function AuthModal({ isSignIn, setShowModal }: { isSignIn: boolea
                                         className="text-2lg font-bold uppercase leading-6 text-gray-900 text-center"
                                     >
                                         {renderContent('Sign In', 'Sign Up')}
+                                        {data?.firstName} {data?.lastName}
+
                                     </Dialog.Title>
                                     <div className="mt-2">
                                         <div className='m-auto'>
                                             <h2 className='text-2xl font-light text-center'>
                                                 {renderContent('Login into your account', 'Create Your Account')}
                                             </h2>
-                                            <AuthModalInputs inputs={inputs} setInputs={setInputs} isSignIn={isSignIn} />
-                                            <button className='uppercase bg-red-600 w-full text-white p-3 mb-5 rounded text-sm disabled:bg-gray-400'>
+                                            {loading && <p>Loading...</p>}
+                                            {!loading && <AuthModalInputs inputs={inputs} setInputs={setInputs} isSignIn={isSignIn} />}
+
+                                            <button
+                                                disabled={disabled}
+                                                onClick={handleSubmit}
+                                                className='uppercase bg-red-600 w-full text-white p-3 mb-5 rounded text-sm disabled:bg-gray-400'>
                                                 {renderContent('Sign In', 'Sign Up')}
                                             </button>
+                                            {error && error?.length > 0 ?
+                                                <p className='text-red-500' key={error}>{error}</p>
+                                                : null}
                                         </div>
-                                    </div>
-
-
-                                    <div className="mt-4">
-                                        <button
-                                            type="button"
-                                            className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                                            onClick={() => {
-                                                setShowModal('');
-                                                closeModal()
-                                            }}
-                                        >
-                                            Got it, thanks!
-                                        </button>
                                     </div>
                                 </Dialog.Panel>
                             </Transition.Child>

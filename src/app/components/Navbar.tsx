@@ -1,5 +1,5 @@
 "use client"
-import { FC, useState } from 'react'
+import { FC, useState } from 'react';
 import AuthModal from './AuthModal';
 
 interface NavbarProps {
